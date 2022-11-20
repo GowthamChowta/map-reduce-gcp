@@ -1,0 +1,3 @@
+﻿Elliott name is Elliott and Rob name is Rob
+Elliott works at Luddy and Rob works also at Luddy
+Elliott goes to Distributed systems and ROB goes to Cloud Computing
