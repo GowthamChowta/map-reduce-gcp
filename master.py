@@ -5,6 +5,8 @@ import os
 import socket
 from threading import Thread
 from time import sleep, time
+
+from instancemanagement import setupMachine
 from client import Client
 from constants import INVALIDCOMMAND
 from keyValueServer import KeyValueServer
@@ -49,13 +51,13 @@ class FileHandler:
 
 
 class Master:
-    def __init__(self, noOfMappers, noOfReducers, task, dataDir):
+    def __init__(self, noOfMappers, noOfReducers, task, dataDir, mappersIP, reducersIP):
         self.noOfMappers = noOfMappers
         self.noOfReducers = noOfReducers
         self.host = socket.gethostbyname(socket.gethostname())
         self.task = task
-        self.mapper = Mapper(self.noOfMappers, self.noOfReducers, int(config["MAPPER"]["PORT"]))
-        self.reducer = Reducer(self.noOfReducers, int(config["REDUCER"]["PORT"]))
+        self.mapper = Mapper(self.noOfMappers, self.noOfReducers, int(config["MAPPER"]["PORT"]), mappersIP, reducersIP)
+        self.reducer = Reducer(self.noOfReducers, int(config["REDUCER"]["PORT"]), reducersIP)
         self.master = Server(self.host, int(config["MASTER"]["PORT"]))
         self.keyValue = KeyValueServer(SaveLoadDisk())
         self.completedMappers = []
@@ -122,19 +124,31 @@ if __name__ == "__main__":
     f = FileHandler(dataDir, noOfMappers)
     f.updateChunkSize()
     chunkSize = f.chunkSize
-    masterNode = Master(noOfMappers, noOfReducers, task, dataDir)
-    masterNode.startKeyValue()
-    masterNode.startMappers(chunkSize)
-    masterNode.startReducers()
+    masterPublicIp, masterInternalIp = setupMachine("Master")
+    keyValueServerPublicIp, keyValueServerInternalIp = setupMachine("keyvalueserver")
+    mappersIP = []
+    reducersIP = []
+    for i in range(noOfMappers):
+        mapperPublicIP, mapperInternalIP = setupMachine("Mapper-"+i)
+        mappersIP.append((mapperPublicIP, mapperInternalIP))
+    for i in range(noOfReducers):
+        reducerPublicIP, reducerInternalIP = setupMachine("Reducer-"+i)
+        reducersIP.append((reducerPublicIP, reducerInternalIP))
+        
+    masterNode = Master(noOfMappers, noOfReducers, task, dataDir, mappersIP, reducersIP)
+    
+    # masterNode.startKeyValue()
+    # masterNode.startMappers(chunkSize)
+    # masterNode.startReducers()
 
-    for i in range(noOfMappers):
-        print("Reading next chunk", "*" * 20)
-        f.sendNextChunkToKeyValueServer("Mapper-" + str(i))
-    print("Centralized key-value store is updated!!")
-    sleep(1)
-    # Once the data is loaded in the key-value store --> tell the mappers to start the task
-    for i in range(noOfMappers):
-        c = Client(socket.gethostbyname(socket.gethostname()), int(config["MAPPER"]["PORT"]) + i)
-        p = Thread(target=c.startMapperRequest)
-        sleep(0.5)
-        p.start()
+    # for i in range(noOfMappers):
+    #     print("Reading next chunk", "*" * 20)
+    #     f.sendNextChunkToKeyValueServer("Mapper-" + str(i))
+    # print("Centralized key-value store is updated!!")
+    # sleep(1)
+    # # Once the data is loaded in the key-value store --> tell the mappers to start the task
+    # for i in range(noOfMappers):
+    #     c = Client(socket.gethostbyname(socket.gethostname()), int(config["MAPPER"]["PORT"]) + i)
+    #     p = Thread(target=c.startMapperRequest)
+    #     sleep(0.5)
+    #     p.start()

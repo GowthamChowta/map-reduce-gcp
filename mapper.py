@@ -13,6 +13,7 @@ os.environ["PYTHONHASHSEED"] = "0"
 config = read_ini("config.ini")
 
 
+
 def word_count_m(start, data):
     data = data.lower()
     data = re.sub(r"[^\w\s]", "", data).split()
@@ -32,13 +33,14 @@ def inverted_index_m(start, data):
 
 
 class Mapper:
-    def __init__(self, noOfMappers, noOfReducers, port, host=socket.gethostbyname(socket.gethostname())):
+    def __init__(self, noOfMappers, noOfReducers, port, index,host=socket.gethostbyname(socket.gethostname())):
 
         self.noOfMappers = noOfMappers
         self.noOfReducers = noOfReducers
         self.port = port
         self.host = host
         self.mapperServers = []
+        self.index = index
 
     def mapperWork(self, socket, func, start, name):
         # When ever mapper receives a request, start the mapper process
@@ -67,9 +69,9 @@ class Mapper:
     def startMapper(self, func, chunkSize):
         print("Starting mappers")
 
-        for i in range(self.noOfMappers):
-            s = Server(self.host, self.port + i)
-            proc = s.startServerOnADifferentProcess(
-                self.mapperWork, args=(func, chunkSize * i, "Mapper-" + str(i)), name=f"Mapper-" + str(i)
-            )
-            self.mapperServers.append(proc)
+        
+        s = Server(self.host, self.port)
+        proc = s.startServerOnADifferentProcess(
+            self.mapperWork, args=(func, chunkSize * i, "Mapper-" + str(i)), name=f"Mapper-" + str(i)
+        )
+        
