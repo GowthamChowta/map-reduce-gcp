@@ -9,8 +9,8 @@ import configparser
 import os
 
 
-if "map-reduce-gcp"  not in os.getcwd():
-    os.chdir("map-reduce-gcp/")
+# if "map-reduce-gcp"  not in os.getcwd():
+#     os.chdir("map-reduce-gcp/")
 
 def read_ini(file_path="./config.ini"):
     config = configparser.ConfigParser()
@@ -164,6 +164,7 @@ def getInstanceExternalInternalIpByName(name):
 def setupMachineByhostIP(hostIP: str):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    print(f"hostIP is {hostIP} username is {USER} and ssh file name is {SSHFilePath}")
     ssh.connect(hostname= hostIP,username=USER,key_filename=SSHFilePath)
     return ssh
     
@@ -183,24 +184,4 @@ def runCommandsOnAMachineOverSSH(ssh,commands):
             print("An error occurred while running the command",command, stderr)       
             
 
-def createBucket(storage):
-    storage_client = storage.Client()
-
-    # The name for the new bucket
-    bucket_name = BUCKETNAMEFORBLOGBSTORAGE
-
-    # Creates the new bucket
-    bucket = storage_client.create_bucket(bucket_name)
-
-    print(f"Bucket {bucket.name} created.")            
-
-def delete_bucket(storage,bucket_name):
-    """Deletes a bucket. The bucket must be empty."""
-    # bucket_name = "your-bucket-name"
-    storage_client = storage.Client()
-
-    bucket = storage_client.get_bucket(bucket_name)
-    bucket.delete()
-
-    print(f"Bucket {bucket.name} deleted")
 

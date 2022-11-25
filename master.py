@@ -6,7 +6,7 @@ import socket
 from threading import Thread
 from time import sleep, time
 
-from instancemanagement import setupMachine
+from instancemanagement import installDependenciesOnMachine, sendDefaultApplicationCredentialsFileToMachine, setupMachine
 from client import Client
 from constants import INVALIDCOMMAND
 from keyValueServer import KeyValueServer
@@ -20,35 +20,6 @@ import re
 config = read_ini("config.ini")
 
 
-class FileHandler:
-    def __init__(self, path, noOfMappers):
-        self.path = path
-        self.startIndex = 0
-        self.chunkSize = -1
-        self.noOfMappers = noOfMappers
-        self.data = None
-        self.host = socket.gethostbyname(socket.gethostname())
-        self.loadFile()
-
-    def loadFile(self):
-        with open(self.path) as f:
-            self.data = f.readlines()
-            self.numberOfLines = len(self.data)
-
-    def updateChunkSize(self):
-
-        self.chunkSize = self.numberOfLines // self.noOfMappers
-
-    def readNextChunk(self):
-
-        self.chunk = " ".join(self.data[self.startIndex : self.startIndex + self.chunkSize])
-        self.startIndex += self.chunkSize
-
-    def sendNextChunkToKeyValueServer(self, key):
-        self.readNextChunk()
-        c = Client(self.host, int(config["KEYVALUE"]["PORT"]))
-        c.set(key, self.chunk)
-
 
 class Master:
     def __init__(self, noOfMappers, noOfReducers, task, dataDir, mappersIP, reducersIP):
@@ -56,12 +27,12 @@ class Master:
         self.noOfReducers = noOfReducers
         self.host = socket.gethostbyname(socket.gethostname())
         self.task = task
-        self.mapper = Mapper(self.noOfMappers, self.noOfReducers, int(config["MAPPER"]["PORT"]), mappersIP, reducersIP)
-        self.reducer = Reducer(self.noOfReducers, int(config["REDUCER"]["PORT"]), reducersIP)
-        self.master = Server(self.host, int(config["MASTER"]["PORT"]))
-        self.keyValue = KeyValueServer(SaveLoadDisk())
-        self.completedMappers = []
-        self.master.startServerOnADifferentProcess(self.masterDoWork, args=("abc",), name="master")
+        # self.mapper = Mapper(self.noOfMappers, self.noOfReducers, int(config["MAPPER"]["PORT"]), mappersIP, reducersIP)
+        # self.reducer = Reducer(self.noOfReducers, int(config["REDUCER"]["PORT"]), reducersIP)
+        # self.master = Server(self.host, int(config["MASTER"]["PORT"]))
+        # self.keyValue = KeyValueServer(SaveLoadDisk())
+        # self.completedMappers = []
+        # self.master.startServerOnADifferentProcess(self.masterDoWork, args=("abc",), name="master")
 
     def getMapperFuncName(self):
         if self.task == "wc":
@@ -121,21 +92,38 @@ if __name__ == "__main__":
     noOfReducers = args.noOfReducers
     dataDir = args.DATA_DIR
 
-    f = FileHandler(dataDir, noOfMappers)
-    f.updateChunkSize()
-    chunkSize = f.chunkSize
-    masterPublicIp, masterInternalIp = setupMachine("Master")
-    keyValueServerPublicIp, keyValueServerInternalIp = setupMachine("keyvalueserver")
+    # masterPublicIp, masterInternalIp = setupMachine("master-2")
+    # keyValueServerPublicIp, keyValueServerInternalIp = setupMachine("keyvalueserver-2")
     mappersIP = []
     reducersIP = []
+    # for i in range(noOfMappers):
+    #     mapperPublicIP, mapperInternalIP = setupMachine("mapperttest-"+str(i))
+    #     mappersIP.append((mapperPublicIP, mapperInternalIP))        
+    mappersIP = [["34.102.112.111"],["35.235.93.87"],["34.102.27.112"]]
     for i in range(noOfMappers):
-        mapperPublicIP, mapperInternalIP = setupMachine("Mapper-"+i)
-        mappersIP.append((mapperPublicIP, mapperInternalIP))
-    for i in range(noOfReducers):
-        reducerPublicIP, reducerInternalIP = setupMachine("Reducer-"+i)
-        reducersIP.append((reducerPublicIP, reducerInternalIP))
+        print(f"Sending credentials to {mappersIP[i][0]} ...")        
+        # sendDefaultApplicationCredentialsFileToMachine(mappersIP[i][0])
+        print(f"Sending credentials to {mappersIP[i][0]} done")
         
-    masterNode = Master(noOfMappers, noOfReducers, task, dataDir, mappersIP, reducersIP)
+    commandsToSetupOnMachine = [
+        "sudo apt install -y git",
+        "git clone https://github.com/GowthamChowta/map-reduce-gcp.git",
+        "sudo apt install -y python3-pip",    
+        "sudo pip install google-cloud-core",
+        "sudo pip install google-cloud-compute" ,
+        "sudo pip install google-cloud-firestore"
+    ]
+    
+    for i in range(noOfMappers):
+        print(f"Installing dependencies on {mappersIP[i][0]} ...")                
+        # installDependenciesOnMachine(mappersIP[i][0],commandsToSetupOnMachine)
+        print(f"Installing dependencies on {mappersIP[i][0]} done")        
+        
+    # for i in range(noOfReducers):
+    #     reducerPublicIP, reducerInternalIP = setupMachine("reducer-"+str(i))
+    #     reducersIP.append((reducerPublicIP, reducerInternalIP))
+        
+    # masterNode = Master(noOfMappers, noOfReducers, task, dataDir, mappersIP, reducersIP)
     
     # masterNode.startKeyValue()
     # masterNode.startMappers(chunkSize)

@@ -1,6 +1,7 @@
 from collections import Counter, defaultdict
 import socket
 from time import sleep
+from putDataInKeyValueStore import GoogleFireStore
 from client import Client
 from constants import STOPWORDS
 from server import Server
@@ -41,8 +42,9 @@ class Mapper:
         self.host = host
         self.mapperServers = []
         self.index = index
+        self.g = GoogleFireStore()
 
-    def mapperWork(self, socket, func, start, name):
+    def mapperWork(self, func, start, name):
         # When ever mapper receives a request, start the mapper process
         print(f"[{name}] Mapper received a request", start, name)
         # Get the data from the keyvalue server
@@ -52,26 +54,30 @@ class Mapper:
         print(f"[{name}] Mapper got the data from key-value server")
         # Do mapper work
         keyValueGenerated = eval(f'{func}("{start}","""{mapperData}""")')
+        print(keyValueGenerated.items())
         # For each key,value -- Send it to appropriate reducer
-        for key, value in keyValueGenerated.items():
-            # Adding sleep to maintain some consistency
-            sleep(0.001)
-            targetReducerPort = hash(key) % self.noOfReducers
-            toReducerClient = Client(self.host, int(config["REDUCER"]["PORT"]) + targetReducerPort)
-            toReducerClient.append(key, str(value))
-        socket.send(f"Done\n{name}".encode())
+        # for key, value in keyValueGenerated.items():
+        #     # Adding sleep to maintain some consistency
+        #     sleep(0.001)
+        #     targetReducerPort = hash(key) % self.noOfReducers
+        #     toReducerClient = Client(self.host, int(config["REDUCER"]["PORT"]) + targetReducerPort)
+        #     toReducerClient.append(key, str(value))        
         print(f"[{name}] Completed its work, sending ACK to master")
         # Once the mapper sent the data, send an ACK to master that it has done its work
-        toMasterClient = Client(self.host, int(config["MASTER"]["PORT"]))
-        # For the ith mapper, it will send mapper-i, done message to the master
-        toMasterClient.set(name, "Done")
+        # toMasterClient = Client(self.host, int(config["MASTER"]["PORT"]))
+        # # For the ith mapper, it will send mapper-i, done message to the master
+        # toMasterClient.set(name, "Done")
 
     def startMapper(self, func, chunkSize):
         print("Starting mappers")
 
         
         s = Server(self.host, self.port)
-        proc = s.startServerOnADifferentProcess(
-            self.mapperWork, args=(func, chunkSize * i, "Mapper-" + str(i)), name=f"Mapper-" + str(i)
-        )
+        self.mapperWork(func,  "Mapper-" + str(self.index))
+        # proc = s.startServerOnADifferentProcess(
+        #     self.mapperWork, args=(func, chunkSize * self.index, "Mapper-" + str(self.index)), name=f"Mapper-" + str(self.index)
+        # )
+        
+        
+# m = Mapper()
         

@@ -3,7 +3,7 @@ import os
 import threading
 from google.api_core.extended_operation import ExtendedOperation
 
-from gcpPythonClientHelper import create_instance, delete_bucket, delete_instance, disk_from_image, getInstanceExternalInternalIpByName, read_ini, runCommandsOnAMachineOverSSH, setupMachineByhostIP
+from gcpPythonClientHelper import create_instance, disk_from_image, getInstanceExternalInternalIpByName, read_ini, runCommandsOnAMachineOverSSH, setupMachineByhostIP
 import sys
 from google.cloud import storage
 
@@ -14,6 +14,7 @@ STORAGE = sys.argv[1]
 params = read_ini()
 
 applicationCredentialsPath = params["GCP"]["applicationCredentials"]
+projectPath = params["GCP"]["projectPath"]
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = applicationCredentialsPath
 ZONE= params["USER"]["ZONE"]
 PROJECTID=params["USER"]["PROJECTID"]
@@ -33,7 +34,7 @@ commandsToSetupOnMachine = [
     "sudo apt install -y python3-pip",    
     "sudo pip install google-cloud-core",
     "sudo pip install google-cloud-compute" ,
-    "sudo pip install paramiko"
+    "sudo pip install google-cloud-firestore"
 ]
 commandsToServer = [
         f"python3 -u simple-keyvaluestore/server.py {SERVERPORT} {STORAGE}"
@@ -45,10 +46,10 @@ commandsToServer = [
 
 
 def sendDefaultApplicationCredentialsFileToMachine(machinePublicIP):
-    print("Sending application credentials to the machine")
+    print("Sending application credentials to the machine for machine public IP",machinePublicIP)
     ssh = setupMachineByhostIP(machinePublicIP)
     ftp_client=ssh.open_sftp()
-    ftp_client.put(applicationCredentialsPath, f"/home/{USER}/cred.json")
+    ftp_client.put(applicationCredentialsPath, f"/home/{USER}/cred.json")    
     ftp_client.close()
     
 
@@ -60,7 +61,7 @@ def setupMachine(instance_name,machine_type="e2-micro"):
     boot_disk = disk_from_image(disk_type,10,True,source_image=source_image)
     create_instance(project_id=PROJECTID,zone=ZONE,instance_name=instance_name,disks=[boot_disk],machine_type=machine_type,external_access=True)
     machinePublicIP,machineInternalIP = getInstanceExternalInternalIpByName(instance_name)
-    sendDefaultApplicationCredentialsFileToMachine(machinePublicIP)
+    # sendDefaultApplicationCredentialsFileToMachine(machinePublicIP)
     print(f"machine Public IP address is {machinePublicIP}")
     print(f"Removing known hosts if exists for {machinePublicIP}")
     os.system(f"ssh-keygen -R {machinePublicIP}")
@@ -79,14 +80,14 @@ def setupMachine(instance_name,machine_type="e2-micro"):
 
 
 
-# def installDependenciesOnServer(serverPublicIP):
-#     print("Installing dependencies on Server")
-#     ssh = setupMachineByhostIP(serverPublicIP)
-#     ## Copying the cred.json file to the server
-#     runCommandsOnAMachineOverSSH(ssh,commandsToSetupOnServer)
-#     ## Start server process
-#     t = threading.Thread(target=runCommandsOnAMachineOverSSH,args=(ssh,commandsToServer))
-#     t.start()    
+def installDependenciesOnMachine(machinePublicIP,commands):
+    print("Installing dependencies on machine ",machinePublicIP)
+    ssh = setupMachineByhostIP(machinePublicIP)
+    ## Copying the cred.json file to the machine
+    # runCommandsOnAMachineOverSSH(ssh,commandsToSetupOnMachine)
+    ## Start Machine process
+    t = threading.Thread(target=runCommandsOnAMachineOverSSH,args=(ssh,commands))
+    t.start()    
     
 
 # def installDependenciesOnClient(clientPublicIP, serverInternalIP):
