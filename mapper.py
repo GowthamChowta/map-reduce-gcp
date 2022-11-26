@@ -49,8 +49,7 @@ class Mapper:
         print(f"[{name}] Mapper received a request", start, name)
         # Get the data from the keyvalue server
         sleep(1)
-        c = Client(self.host, int(config["KEYVALUE"]["PORT"]))
-        mapperData = c.get(name)
+        mapperData = self.g.get(name)
         print(f"[{name}] Mapper got the data from key-value server")
         # Do mapper work
         keyValueGenerated = eval(f'{func}("{start}","""{mapperData}""")')
