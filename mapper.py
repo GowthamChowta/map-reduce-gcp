@@ -73,7 +73,7 @@ class Mapper:
 
         
         s = Server(self.host, self.port)
-        self.mapperWork(func,  "Mapper-" + str(self.index),self.index,"asd")
+        self.mapperWork(func, self.index, "Mapper-" + str(self.index))
         # proc = s.startServerOnADifferentProcess(
         #     self.mapperWork, args=(func, chunkSize * self.index, "Mapper-" + str(self.index)), name=f"Mapper-" + str(self.index)
         # )
