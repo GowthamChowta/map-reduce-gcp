@@ -68,7 +68,7 @@ class Mapper:
         # # For the ith mapper, it will send mapper-i, done message to the master
         # toMasterClient.set(name, "Done")
 
-    def startMapper(self, func, chunkSize):
+    def startMapper(self, func):
         print("Starting mappers")
 
         
@@ -79,5 +79,6 @@ class Mapper:
         # )
         
         
-# m = Mapper()
+m = Mapper(3,3,8080,1)
+m.startMapper("inverted_index_m")
         
