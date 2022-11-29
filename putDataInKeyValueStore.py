@@ -93,7 +93,7 @@ class GoogleFireStore(CustomStorage):
         doc_ref = self.db.document(u''+key)
         doc = doc_ref.get()
         if doc.exists:
-            print(doc.to_dict())
+            # print(doc.to_dict())
             return self.parseGetResponse(key,doc.to_dict()["value"])                        
         else:
             return self.parseGetResponse(key,None)
