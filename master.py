@@ -18,7 +18,7 @@ config = read_ini("config.ini")
 
 
 class Master:
-    def __init__(self, noOfMappers, noOfReducers, task, dataDir, mappersIP, reducersIP):
+    def __init__(self, noOfMappers, noOfReducers, task, dataDir):
         self.noOfMappers = noOfMappers
         self.noOfReducers = noOfReducers
         self.host = socket.gethostbyname(socket.gethostname())
