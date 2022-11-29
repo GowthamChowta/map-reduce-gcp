@@ -51,7 +51,7 @@ class Mapper:
         print(f"[{name}] Mapper received a request", start, name)
         # Get the data from the keyvalue server
         sleep(1)
-        mapperData = self.g.get(name)
+        mapperData = self.g.getOriginal(name)
         print(f"[{name}] Mapper got the data from key-value server")
         # Do mapper work
         keyValueGenerated = eval(f'{func}("{start}","""{mapperData}""")')        
@@ -69,9 +69,10 @@ class Mapper:
                 break
         print(f"[{name}] Completed its work, sending ACK to master")
         # Once the mapper sent the data, send an ACK to master that it has done its work
-        # toMasterClient = Client(self.host, int(config["MASTER"]["PORT"]))
+        masterHost = self.g.getOriginal("masterinternalip")
+        toMasterClient = Client(masterHost, 8080)
         # # For the ith mapper, it will send mapper-i, done message to the master
-        # toMasterClient.set(name, "Done")
+        toMasterClient.set(name, "Done")
 
     def startMapper(self, func):
         print("Starting mappers")

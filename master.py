@@ -9,6 +9,7 @@ from putDataInKeyValueStore import GoogleFireStore
 from instancemanagement import installDependenciesOnMachine, sendDefaultApplicationCredentialsFileToMachine, setupMachine
 from client import Client
 from constants import INVALIDCOMMAND
+from server import Server
 from util import read_ini
 import re
 
@@ -26,7 +27,7 @@ class Master:
         # self.reducer = Reducer(self.noOfReducers, int(config["REDUCER"]["PORT"]), reducersIP)
         # self.master = Server(self.host, int(config["MASTER"]["PORT"]))
         # self.keyValue = KeyValueServer(SaveLoadDisk())
-        # self.completedMappers = []
+        self.completedMappers = []
         # self.master.startServerOnADifferentProcess(self.masterDoWork, args=("abc",), name="master")
 
     def getMapperFuncName(self):
@@ -188,9 +189,14 @@ if __name__ == "__main__":
     noOfMappers = args.noOfMappers
     noOfReducers = args.noOfReducers
     dataDir = args.DATA_DIR
+    m = Master(noOfMappers, noOfReducers, task, dataDir)
     
-    setupInfrastructure(noOfMappers, noOfReducers)
-    # startReducerServers()
-    # print("[Main] Reducer servers started")
-    # sleep(5)
-    # startMapperWork()
+    s = Server(socket.gethostbyname(socket.gethostname()))
+    # Args not necessary. 
+    s.startServerOnADifferentProcess(m.masterDoWork,args=('Master'),name="Master Server")
+    
+    # setupInfrastructure(noOfMappers, noOfReducers)
+    startReducerServers()
+    print("[Main] Reducer servers started")
+    sleep(5)
+    startMapperWork()
