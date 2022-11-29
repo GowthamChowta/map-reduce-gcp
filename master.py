@@ -195,11 +195,15 @@ if __name__ == "__main__":
     dataDir = args.DATA_DIR
     m = Master(noOfMappers, noOfReducers, task, dataDir)
     
-    s = Server(socket.gethostbyname(socket.gethostname()))
-    # Args not necessary. 
-    s.startServerOnADifferentProcess(m.masterDoWork,args=('Master',),name="Master Server")
+    # s = Server(socket.gethostbyname(socket.gethostname()))
+    # # Args not necessary. 
+    # s.startServerOnADifferentProcess(m.masterDoWork,args=('Master',),name="Master Server")
     
-    # setupInfrastructure(noOfMappers, noOfReducers)
+    setupInfrastructure(noOfMappers, noOfReducers)
+    print("Setting up infrastructure")
+    sleep(30)
+    print("Installing dependencies")
+    installDependencies()
     # startReducerServers()
     # print("[Main] Reducer servers started")
     # sleep(5)
