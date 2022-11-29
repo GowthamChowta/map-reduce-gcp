@@ -116,4 +116,4 @@ class Reducer:
 index = int(sys.argv[1])
 
 r = Reducer(-1,8080,index)
-r.startReducer()
+r.startReducer("inverted_index_r")
