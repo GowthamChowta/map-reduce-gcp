@@ -50,7 +50,6 @@ class Mapper:
         # When ever mapper receives a request, start the mapper process
         print(f"[{name}] Mapper received a request", start, name)
         # Get the data from the keyvalue server
-        sleep(1)
         mapperData = self.g.getOriginal(name)
         print(f"[{name}] Mapper got the data from key-value server")
         # Do mapper work
@@ -63,7 +62,7 @@ class Mapper:
             # Adding sleep to maintain some consistency
             sleep(0.1)
             targetReducer = len(key) % self.noOfReducers            
-            print("Sending data to reducer ",targetReducer)
+            print("Sending data to reducer ",targetReducer, self.reducerIps[targetReducer])
             toReducerClient = Client(self.reducerIps[targetReducer],8080)
             toReducerClient.append(key, str(value))        
             count +=1
