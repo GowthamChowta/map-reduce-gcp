@@ -5,6 +5,7 @@ import os
 import socket
 from threading import Thread
 from time import sleep, time
+from putDataInKeyValueStore import GoogleFireStore
 
 from instancemanagement import installDependenciesOnMachine, sendDefaultApplicationCredentialsFileToMachine, setupMachine
 from client import Client
@@ -64,11 +65,6 @@ class Master:
                 toReducerClient = Client(self.host, int(config["REDUCER"]["PORT"]) + i)
                 toReducerClient.startReducer("startReducer", "reducer")
 
-    def startKeyValue(self):
-        self.keyValueServer = Server(self.host, int(config["KEYVALUE"]["PORT"]))
-        self.keyValueServer.startServerOnADifferentProcess(
-            self.keyValue.doWork, args=("Keyvalue server",), name="keyValueServer"
-        )
 
     def startMappers(self, chunkSize):
 
@@ -76,6 +72,106 @@ class Master:
 
     def startReducers(self):
         self.reducer.startReducer(self.getReducerFuncName())
+        
+        
+def setupInfrastructure(noOfMappers, noOfReducers):
+    
+
+    masterPublicIp, masterInternalIp = setupMachine("master-2")    
+    
+    # masterPublicIp = "34.94.160.168"    
+        
+    mappersIP = []
+    reducersIP = []
+    for i in range(noOfMappers):
+        mapperPublicIP, mapperInternalIP = setupMachine("mapperttest-"+str(i))
+        mappersIP.append((mapperPublicIP, mapperInternalIP))        
+    # mappersIP = [["34.102.112.111"],["35.235.93.87"],["34.102.27.112"]]
+
+    for i in range(noOfReducers):
+        reducerPublicIP, reducerInternalIP = setupMachine("reducer-"+str(i))
+        reducersIP.append((reducerPublicIP, reducerInternalIP))
+    
+    config.set("GCP","masterpublicip"," ".join(masterPublicIp))
+    config.set("GCP","masterinternalip"," ".join(masterInternalIp))
+    
+    config.set("GCP","mapperpublicips"," ".join([i[0] for i in mappersIP]))
+    config.set("GCP","mapperinternalips"," ".join([i[1] for i in mappersIP]))
+    
+    config.set("GCP","reducerpublicips"," ".join([i[0] for i in reducersIP]))
+    config.set("GCP","reducerinternalips"," ".join([i[1] for i in reducersIP]))
+    
+    with open('config.ini', 'w') as configfile:    # save
+        config.write(configfile)    
+        
+    print("[Main] Setting the ips to google firestore")
+    g = GoogleFireStore()
+    g.save(["mapperpublicips",config.get("GCP","masterpublicip")])
+    g.save(["masterinternalip",config.get("GCP","masterinternalip")])
+    g.save(["mapperpublicips",config.get("GCP","mapperpublicips")])
+    g.save(["mapperinternalips",config.get("GCP","mapperinternalips")])
+    g.save(["reducerpublicips",config.get("GCP","reducerpublicips")])
+    g.save(["reducerinternalips",config.get("GCP","reducerinternalips")])
+    print("[Main] Updated the ip address information to google firestore")
+    
+
+def installDependencies():
+    
+    commandsToSetupOnMachine = [
+        "sudo apt install -y git",
+        "git clone https://github.com/GowthamChowta/map-reduce-gcp.git",
+        "sudo apt install -y python3-pip",    
+        "sudo pip install google-cloud-core",
+        "sudo pip install google-cloud-compute" ,
+        "sudo pip install google-cloud-firestore",
+        "sudo pip install google-cloud-storage"
+    ]
+    masterPublicIp = config.get("GCP", "masterpublicip")
+    installDependenciesOnMachine(masterPublicIp, commandsToSetupOnMachine)
+    sendDefaultApplicationCredentialsFileToMachine(masterPublicIp)
+    print("[Main] Master setup is complete")
+    
+    mappersIP = config.get("GCP","mapperpublicips").split()
+    
+    for i in range(len(mappersIP)):
+        print(f"Sending credentials to {mappersIP[i]} ...")        
+        sendDefaultApplicationCredentialsFileToMachine(mappersIP[i])
+        print(f"Sending credentials to {mappersIP[i]} done")
+        
+    for i in range(len(mappersIP)):
+        print(f"Installing dependencies on {mappersIP[i]} ...")                
+        installDependenciesOnMachine(mappersIP[i],commandsToSetupOnMachine)
+        print(f"Installing dependencies on {mappersIP[i]} done")        
+    
+    print("[Main] Mapper setup is complete")
+    
+    reducersIP = config.get("GCP","reducerinternalips").split()
+    
+    for i in range(len(reducersIP)):
+        print(f"Sending credentials to {reducersIP[i]} ...")        
+        sendDefaultApplicationCredentialsFileToMachine(reducersIP[i])
+        print(f"Sending credentials to {reducersIP[i]} done")
+        
+    for i in range(len(reducersIP)):
+        print(f"Installing dependencies on {reducersIP[i]} ...")                
+        installDependenciesOnMachine(reducersIP[i],commandsToSetupOnMachine[:2])
+        print(f"Installing dependencies on {reducersIP[i]} done")      
+        
+        
+    print("[Main] Reducer setup is complete")
+
+
+def startMapperWork():
+    commandsToRun = [
+        "python3 python3 map-reduce-gcp/mapper.py "
+    ]
+    mapperIps = config.get("GCP","mapperpublicips")
+    for i in range(len(mapperIps)):
+        installDependenciesOnMachine(mapperIps[i], commandsToRun[0] + str(i))
+    
+    
+
+    
 
 
 if __name__ == "__main__":
@@ -91,52 +187,5 @@ if __name__ == "__main__":
     noOfMappers = args.noOfMappers
     noOfReducers = args.noOfReducers
     dataDir = args.DATA_DIR
-
-    # masterPublicIp, masterInternalIp = setupMachine("master-2")
-    # keyValueServerPublicIp, keyValueServerInternalIp = setupMachine("keyvalueserver-2")
-    mappersIP = []
-    reducersIP = []
-    # for i in range(noOfMappers):
-    #     mapperPublicIP, mapperInternalIP = setupMachine("mapperttest-"+str(i))
-    #     mappersIP.append((mapperPublicIP, mapperInternalIP))        
-    mappersIP = [["34.102.112.111"],["35.235.93.87"],["34.102.27.112"]]
-    for i in range(noOfMappers):
-        print(f"Sending credentials to {mappersIP[i][0]} ...")        
-        # sendDefaultApplicationCredentialsFileToMachine(mappersIP[i][0])
-        print(f"Sending credentials to {mappersIP[i][0]} done")
-        
-    commandsToSetupOnMachine = [
-        "sudo apt install -y git",
-        "git clone https://github.com/GowthamChowta/map-reduce-gcp.git",
-        "sudo apt install -y python3-pip",    
-        "sudo pip install google-cloud-core",
-        "sudo pip install google-cloud-compute" ,
-        "sudo pip install google-cloud-firestore"
-    ]
     
-    for i in range(noOfMappers):
-        print(f"Installing dependencies on {mappersIP[i][0]} ...")                
-        # installDependenciesOnMachine(mappersIP[i][0],commandsToSetupOnMachine)
-        print(f"Installing dependencies on {mappersIP[i][0]} done")        
-        
-    # for i in range(noOfReducers):
-    #     reducerPublicIP, reducerInternalIP = setupMachine("reducer-"+str(i))
-    #     reducersIP.append((reducerPublicIP, reducerInternalIP))
-        
-    # masterNode = Master(noOfMappers, noOfReducers, task, dataDir, mappersIP, reducersIP)
-    
-    # masterNode.startKeyValue()
-    # masterNode.startMappers(chunkSize)
-    # masterNode.startReducers()
-
-    # for i in range(noOfMappers):
-    #     print("Reading next chunk", "*" * 20)
-    #     f.sendNextChunkToKeyValueServer("Mapper-" + str(i))
-    # print("Centralized key-value store is updated!!")
-    # sleep(1)
-    # # Once the data is loaded in the key-value store --> tell the mappers to start the task
-    # for i in range(noOfMappers):
-    #     c = Client(socket.gethostbyname(socket.gethostname()), int(config["MAPPER"]["PORT"]) + i)
-    #     p = Thread(target=c.startMapperRequest)
-    #     sleep(0.5)
-    #     p.start()
+    setupInfrastructure(noOfMappers, noOfReducers)

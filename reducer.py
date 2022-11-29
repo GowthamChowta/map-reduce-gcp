@@ -111,3 +111,4 @@ class Reducer:
             ),
             name=f"Reducer-" + str(self.index),
         )
+

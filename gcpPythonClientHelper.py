@@ -20,7 +20,7 @@ def read_ini(file_path="./config.ini"):
 
 params = read_ini()
 
-applicationCredentialsPath = params["GCP"]["applicationCredentials"]
+applicationCredentialsPath = params["GCP"]["localappcredentialsPath"]
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = applicationCredentialsPath
 ZONE= params["USER"]["ZONE"]
 PROJECTID=params["USER"]["PROJECTID"]

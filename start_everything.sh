@@ -34,4 +34,5 @@ gcloud compute firewall-rules create default-allow-internal --network default --
 
 # Starting key-value server, test client 
 
-python3 master.py --noofmappers 3 --noofreducers 2 --task inv_ind --datadir ./data/book_sample.txt
+python3 master.py --noofmappers 3 --noofreducers 3 --task inv_ind --datadir ./data/book_sample.txt
+cp $(awk -F "=" '/applicationcredentials/ {print $2}' config.ini) /cred.json
