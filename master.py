@@ -190,7 +190,7 @@ if __name__ == "__main__":
     dataDir = args.DATA_DIR
     
     # setupInfrastructure(noOfMappers, noOfReducers)
-    startReducerServers()
-    print("[Main] Reducer servers started")
-    sleep(5)
+    # startReducerServers()
+    # print("[Main] Reducer servers started")
+    # sleep(5)
     startMapperWork()
