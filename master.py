@@ -165,11 +165,18 @@ def startMapperWork():
     commandsToRun = [
         "python3 map-reduce-gcp/mapper.py "
     ]
-    mapperIps = config.get("GCP","mapperpublicips").split()
+    mapperIps = config.get("GCP","mapperinternalips").split()
     for i in range(len(mapperIps)):
         installDependenciesOnMachine(mapperIps[i], [commandsToRun[0] + str(i)])
     
-    
+
+def startReducerServers():
+    commandsToRun = [
+        "python3 map-reduce-gcp/reducer.py"
+    ]
+    reducerIps = config.get("GCP","reducerinternalips").split()
+    for i in range(len(reducerIps)):
+        installDependenciesOnMachine(reducerIps[i], [commandsToRun[0]])
 
     
 
@@ -189,4 +196,7 @@ if __name__ == "__main__":
     dataDir = args.DATA_DIR
     
     # setupInfrastructure(noOfMappers, noOfReducers)
+    startReducerServers()
+    print("[Main] Reducer servers started")
+    sleep(5)
     startMapperWork()
