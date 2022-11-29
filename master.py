@@ -170,7 +170,7 @@ def startReducerServers():
     ]
     reducerIps = config.get("GCP","reducerinternalips").split()
     for i in range(len(reducerIps)):
-        installDependenciesOnMachine(reducerIps[i], [commandsToRun[0]])
+        installDependenciesOnMachine(reducerIps[i],[commandsToRun[0] + str(i)])
 
     
 
