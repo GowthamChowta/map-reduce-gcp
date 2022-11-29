@@ -75,32 +75,32 @@ class Master:
 def setupInfrastructure(noOfMappers, noOfReducers):
     
 
-    # masterPublicIp, masterInternalIp = setupMachine("master-2")    
+    masterPublicIp, masterInternalIp = setupMachine("master-2")    
     
-    # # masterPublicIp = "34.94.160.168"    
+    # masterPublicIp = "34.94.160.168"    
         
-    # mappersIP = []
-    # reducersIP = []
-    # for i in range(noOfMappers):
-    #     mapperPublicIP, mapperInternalIP = setupMachine("mapperttest-"+str(i))
-    #     mappersIP.append((mapperPublicIP, mapperInternalIP))        
-    # # mappersIP = [["34.102.112.111"],["35.235.93.87"],["34.102.27.112"]]
+    mappersIP = []
+    reducersIP = []
+    for i in range(noOfMappers):
+        mapperPublicIP, mapperInternalIP = setupMachine("mapperttest-"+str(i))
+        mappersIP.append((mapperPublicIP, mapperInternalIP))        
+    # mappersIP = [["34.102.112.111"],["35.235.93.87"],["34.102.27.112"]]
 
-    # for i in range(noOfReducers):
-    #     reducerPublicIP, reducerInternalIP = setupMachine("reducer-"+str(i))
-    #     reducersIP.append((reducerPublicIP, reducerInternalIP))
+    for i in range(noOfReducers):
+        reducerPublicIP, reducerInternalIP = setupMachine("reducer-"+str(i))
+        reducersIP.append((reducerPublicIP, reducerInternalIP))
     
-    # config.set("GCP","masterpublicip"," ".join(masterPublicIp))
-    # config.set("GCP","masterinternalip"," ".join(masterInternalIp))
+    config.set("GCP","masterpublicip"," ".join(masterPublicIp))
+    config.set("GCP","masterinternalip"," ".join(masterInternalIp))
     
-    # config.set("GCP","mapperpublicips"," ".join([i[0] for i in mappersIP]))
-    # config.set("GCP","mapperinternalips"," ".join([i[1] for i in mappersIP]))
+    config.set("GCP","mapperpublicips"," ".join([i[0] for i in mappersIP]))
+    config.set("GCP","mapperinternalips"," ".join([i[1] for i in mappersIP]))
     
-    # config.set("GCP","reducerpublicips"," ".join([i[0] for i in reducersIP]))
-    # config.set("GCP","reducerinternalips"," ".join([i[1] for i in reducersIP]))
+    config.set("GCP","reducerpublicips"," ".join([i[0] for i in reducersIP]))
+    config.set("GCP","reducerinternalips"," ".join([i[1] for i in reducersIP]))
     
-    # with open('config.ini', 'w') as configfile:    # save
-    #     config.write(configfile)    
+    with open('config.ini', 'w') as configfile:    # save
+        config.write(configfile)    
         
     print("[Main] Setting the ips to google firestore")
     g = GoogleFireStore()

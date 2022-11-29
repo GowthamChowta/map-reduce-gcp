@@ -1,5 +1,6 @@
 from collections import defaultdict
 import socket
+from putDataInKeyValueStore import GoogleFireStore
 
 
 from server import Server
@@ -44,6 +45,7 @@ class ReducerKeyValueServer:
 
     def __init__(self):
         self.keyValueStore = defaultdict()
+        self.g = GoogleFireStore()
 
     def validateAndParseMessage(self, message):
         message = message.decode()
@@ -80,6 +82,7 @@ class ReducerKeyValueServer:
         elif self.data[0] == "startReducer":
             print(f"Starting {name}")
             self.saveDataToDir(self.keyValueStore, name)
+            self.saveDataToFireStore(name)
             clientSock.send(STORED)
         # print("[KeyValueServer]:", message)
 
@@ -91,7 +94,13 @@ class ReducerKeyValueServer:
             dict[key] = list(value)
         with open("/home/chgowt_iu_edu/map-reduce-gcp/output/" + filePath + ".json", "w") as f:
             json.dump(dict, f)
-        print(f"[{filePath}] Data saved to file")
+        print(f"[{filePath}] Data saved to disk")
+    
+    def saveDataToFireStore(self,name):
+        for key, value in self.keyValueStore.items():
+            self.g.save([key,value])
+        print(f"Data from {name} saved successfully to firestore")
+        
 
 
 class Reducer:
