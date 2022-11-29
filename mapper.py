@@ -55,12 +55,17 @@ class Mapper:
         keyValueGenerated = eval(f'{func}("{start}","""{mapperData}""")')
         print(keyValueGenerated.items())
         # For each key,value -- Send it to appropriate reducer
-        # for key, value in keyValueGenerated.items():
-        #     # Adding sleep to maintain some consistency
-        #     sleep(0.001)
-        #     targetReducerPort = hash(key) % self.noOfReducers
-        #     toReducerClient = Client(self.host, int(config["REDUCER"]["PORT"]) + targetReducerPort)
-        #     toReducerClient.append(key, str(value))        
+        count = 0
+        for key, value in keyValueGenerated.items():
+            # Adding sleep to maintain some consistency
+            sleep(0.001)
+            # targetReducerPort = hash(key) % self.noOfReducers
+            # toReducerClient = Client(self.host, int(config["REDUCER"]["PORT"]) + targetReducerPort)
+            toReducerClient = Client("10.168.0.6",8080)
+            toReducerClient.append(key, str(value))        
+            count +=1
+            if count == 10:
+                break
         print(f"[{name}] Completed its work, sending ACK to master")
         # Once the mapper sent the data, send an ACK to master that it has done its work
         # toMasterClient = Client(self.host, int(config["MASTER"]["PORT"]))
@@ -78,6 +83,6 @@ class Mapper:
         # )
         
         
-m = Mapper(3,3,8080,1)
-m.startMapper("inverted_index_m")
+# m = Mapper(3,3,8080,1)
+# m.startMapper("inverted_index_m")
         
