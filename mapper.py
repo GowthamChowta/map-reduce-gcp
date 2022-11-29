@@ -36,11 +36,10 @@ def inverted_index_m(start, data):
 
 
 class Mapper:
-    def __init__(self, port, index,reducerInternalIps,host=socket.gethostbyname(socket.gethostname())):
+    def __init__(self, port, index,host=socket.gethostbyname(socket.gethostname())):
 
         self.port = port
         self.host = host
-        self.reducerHosts = reducerInternalIps
         self.mapperServers = []
         self.index = index
         self.g = GoogleFireStore()
@@ -83,7 +82,9 @@ class Mapper:
         #     self.mapperWork, args=(func, chunkSize * self.index, "Mapper-" + str(self.index)), name=f"Mapper-" + str(self.index)
         # )
         
-        
-# m = Mapper(3,3,8080,1)
-# m.startMapper("inverted_index_m")
+
+index = int(sys.argv[1])
+
+m = Mapper(8080,index)
+m.startMapper("inverted_index_m")
         

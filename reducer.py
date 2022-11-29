@@ -9,7 +9,7 @@ import re
 from time import sleep
 import json
 from constants import INVALIDCOMMAND, NEWLINESEPERATOR, NOTEXISTS, STORED
-
+import sys
 # HOST = socket.gethostbyname(socket.gethostname())
 
 
@@ -113,3 +113,7 @@ class Reducer:
             name=f"Reducer-" + str(self.index),
         )
 
+index = int(sys.argv[1])
+
+r = Reducer(-1,8080,index)
+r.startReducer()
