@@ -166,7 +166,7 @@ def startMapperWork():
 
 def startReducerServers():
     commandsToRun = [
-        "python3 map-reduce-gcp/reducer.py"
+        "python3 map-reduce-gcp/reducer.py "
     ]
     reducerIps = config.get("GCP","reducerinternalips").split()
     for i in range(len(reducerIps)):
