@@ -70,6 +70,7 @@ class Mapper:
         print(f"[{name}] Completed its work, sending ACK to master")
         # Once the mapper sent the data, send an ACK to master that it has done its work
         masterHost = self.g.getOriginal("masterinternalip")
+        print("master host is",masterHost)
         toMasterClient = Client(masterHost, 8080)
         # # For the ith mapper, it will send mapper-i, done message to the master
         toMasterClient.set(name, "Done")
