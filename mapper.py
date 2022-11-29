@@ -58,6 +58,7 @@ class Mapper:
         # For each key,value -- Send it to appropriate reducer
         count = 0
         print("What is reducer ips",self.reducerIps)
+        print("key value items", list(keyValueGenerated.items()[:10]))
         for key, value in keyValueGenerated.items():
             # Adding sleep to maintain some consistency
             sleep(0.001)
