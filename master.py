@@ -28,6 +28,7 @@ class Master:
         # self.master = Server(self.host, int(config["MASTER"]["PORT"]))
         # self.keyValue = KeyValueServer(SaveLoadDisk())
         self.completedMappers = []
+        self.g = GoogleFireStore()        
         # self.master.startServerOnADifferentProcess(self.masterDoWork, args=("abc",), name="master")
 
     def getMapperFuncName(self):
@@ -121,7 +122,8 @@ def installDependencies():
         "sudo pip install google-cloud-core",
         "sudo pip install google-cloud-compute" ,
         "sudo pip install google-cloud-firestore",
-        "sudo pip install google-cloud-storage"
+        "sudo pip install google-cloud-storage",
+        "sudo pip install paramiko"
     ]
     masterPublicIp = config.get("GCP", "masterpublicip")
     installDependenciesOnMachine(masterPublicIp, commandsToSetupOnMachine)
