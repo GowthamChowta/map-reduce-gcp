@@ -61,8 +61,9 @@ class Mapper:
         print("key value items", list(keyValueGenerated.items())[:10])
         for key, value in keyValueGenerated.items():
             # Adding sleep to maintain some consistency
-            sleep(0.001)
+            sleep(0.1)
             targetReducer = len(key) % self.noOfReducers            
+            print("Sending data to reducer ",targetReducer)
             toReducerClient = Client(self.reducerIps[targetReducer],8080)
             toReducerClient.append(key, str(value))        
             count +=1
