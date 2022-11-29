@@ -196,7 +196,7 @@ if __name__ == "__main__":
     s.startServerOnADifferentProcess(m.masterDoWork,args=('Master'),name="Master Server")
     
     # setupInfrastructure(noOfMappers, noOfReducers)
-    startReducerServers()
-    print("[Main] Reducer servers started")
-    sleep(5)
-    startMapperWork()
+    # startReducerServers()
+    # print("[Main] Reducer servers started")
+    # sleep(5)
+    # startMapperWork()
