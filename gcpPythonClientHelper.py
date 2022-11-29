@@ -9,8 +9,8 @@ import configparser
 import os
 
 
-# if "map-reduce-gcp"  not in os.getcwd():
-#     os.chdir("map-reduce-gcp/")
+if "map-reduce-gcp"  not in os.getcwd():
+    os.chdir("map-reduce-gcp/")
 
 def read_ini(file_path="./config.ini"):
     config = configparser.ConfigParser()
