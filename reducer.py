@@ -93,23 +93,21 @@ class ReducerKeyValueServer:
 
 
 class Reducer:
-    def __init__(self, noOfReducers, port, host=socket.gethostbyname(socket.gethostname())):
+    def __init__(self, noOfReducers, port,index, host=socket.gethostbyname(socket.gethostname())):
 
         self.noOfReducers = noOfReducers
         self.port = port
         self.host = host
-        self.reducerServers = []
+        self.index = index
 
     def startReducer(self, func):
-        print("Starting Reducers")
-        for i in range(self.noOfReducers):
-            s = Server(self.host, self.port + i)
-            s.startServerOnADifferentProcess(
-                ReducerKeyValueServer().doWork,
-                args=(
-                    func,
-                    f"Reducer-" + str(i),
-                ),
-                name=f"Reducer-" + str(i),
-            )
-            self.reducerServers.append(s)
+        print("Starting Reducers")        
+        s = Server(self.host, self.port)
+        s.startServerOnADifferentProcess(
+            ReducerKeyValueServer().doWork,
+            args=(
+                func,
+                f"Reducer-" + str(self.index),
+            ),
+            name=f"Reducer-" + str(self.index),
+        )
