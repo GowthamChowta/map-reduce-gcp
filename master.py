@@ -193,7 +193,7 @@ if __name__ == "__main__":
     
     s = Server(socket.gethostbyname(socket.gethostname()))
     # Args not necessary. 
-    s.startServerOnADifferentProcess(m.masterDoWork,args=('Master'),name="Master Server")
+    s.startServerOnADifferentProcess(m.masterDoWork,args=('Master',),name="Master Server")
     
     # setupInfrastructure(noOfMappers, noOfReducers)
     # startReducerServers()
