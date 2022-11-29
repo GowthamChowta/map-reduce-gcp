@@ -88,7 +88,7 @@ class ReducerKeyValueServer:
             if type(value) == int:
                 break
             dict[key] = list(value)
-        with open("output/" + filePath + ".json", "w") as f:
+        with open("./output/" + filePath + ".json", "w") as f:
             json.dump(dict, f)
         print(f"[{filePath}] Data saved to file")
 
