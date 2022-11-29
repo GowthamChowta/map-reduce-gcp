@@ -74,7 +74,7 @@ class ReducerKeyValueServer:
             value = " ".join(value)
             eval(f'{func}(self.keyValueStore,"{key}", "{value}")')            
             clientSock.send(STORED)
-            self.saveDataToDir(self.keyValueStore, name)
+            # self.saveDataToDir(self.keyValueStore, name)
 
         elif self.data[0] == "startReducer":
             print(f"Starting {name}")
