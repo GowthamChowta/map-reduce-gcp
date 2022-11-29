@@ -55,9 +55,11 @@ class Master:
             socket.send(INVALIDCOMMAND)
         if len(self.completedMappers) >= self.noOfMappers:
             print("All mappers ACK, tell the reducers to start the task")
+            self.reducerIps = self.g.getOriginal("reducerinternalips").split()
+            self.noOfReducers = len(self.reducerIps)
             for i in range(self.noOfReducers):
                 print(f"[Master] Send request to Reducer[{i}] to start the task")
-                toReducerClient = Client(self.host, int(config["REDUCER"]["PORT"]) + i)
+                toReducerClient = Client( self.reducerIps[i],8080)
                 toReducerClient.startReducer("startReducer", "reducer")
 
 
