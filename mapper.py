@@ -43,7 +43,7 @@ class Mapper:
         self.mapperServers = []
         self.index = index
         self.g = GoogleFireStore()
-        self.reducerIps = self.g.get("reducerinternalips").split()
+        self.reducerIps = self.g.getOriginal("reducerinternalips").split()
         self.noOfReducers = len(self.reducerIps)
 
     def mapperWork(self, func, start, name):
