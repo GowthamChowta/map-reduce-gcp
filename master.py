@@ -165,9 +165,9 @@ def startMapperWork():
     commandsToRun = [
         "python3 map-reduce-gcp/mapper.py "
     ]
-    mapperIps = config.get("GCP","mapperpublicips")
+    mapperIps = config.get("GCP","mapperpublicips").split()
     for i in range(len(mapperIps)):
-        installDependenciesOnMachine(mapperIps[i], commandsToRun[0] + str(i))
+        installDependenciesOnMachine(mapperIps[i], [commandsToRun[0] + str(i)])
     
     
 
