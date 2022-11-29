@@ -88,6 +88,16 @@ class GoogleFireStore(CustomStorage):
             "value":data[1]
         })
         print("Data saved to firestore successfully")
+        
+    
+    def getOriginal(self,key):
+        doc_ref = self.db.document(u''+key)
+        doc = doc_ref.get()
+        if doc.exists:
+            # print(doc.to_dict())
+            return doc.to_dict()["value"]
+        else:
+            return None
     
     def get(self,key):
         doc_ref = self.db.document(u''+key)
