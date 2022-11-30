@@ -55,14 +55,13 @@ class Mapper:
         # Do mapper work
         keyValueGenerated = eval(f'{func}("{start}","""{mapperData}""")')        
         # For each key,value -- Send it to appropriate reducer
-        count = 0
-        print("What is reducer ips",self.reducerIps)
+        count = 0        
         print("key value items", list(keyValueGenerated.items())[:10])
         for key, value in keyValueGenerated.items():
             # Adding sleep to maintain some consistency
             sleep(0.1)
             targetReducer = len(key) % self.noOfReducers            
-            print("Sending data to reducer ",targetReducer, self.reducerIps[targetReducer])
+            print(f"Sending data {key} to reducer ", self.reducerIps[targetReducer])
             toReducerClient = Client(self.reducerIps[targetReducer],8080)
             toReducerClient.append(key, str(value))        
             count +=1

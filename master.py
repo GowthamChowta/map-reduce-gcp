@@ -101,10 +101,13 @@ def setupInfrastructure(noOfMappers, noOfReducers):
     
     with open('config.ini', 'w') as configfile:    # save
         config.write(configfile)    
+
+
+def saveToFireStore():
         
     print("[Main] Setting the ips to google firestore")
     g = GoogleFireStore()
-    g.save(["mapperpublicips",config.get("GCP","masterpublicip")])
+    g.save(["masterpublicip",config.get("GCP","masterpublicip")])
     g.save(["masterinternalip",config.get("GCP","masterinternalip")])
     g.save(["mapperpublicips",config.get("GCP","mapperpublicips")])
     g.save(["mapperinternalips",config.get("GCP","mapperinternalips")])
@@ -201,6 +204,7 @@ if __name__ == "__main__":
     
     # setupInfrastructure(noOfMappers, noOfReducers)
     print("Setting up infrastructure")
+    # saveToFireStore()
     # sleep(30)
     print("Installing dependencies")
     # installDependencies()

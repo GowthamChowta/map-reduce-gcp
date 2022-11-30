@@ -110,9 +110,9 @@ class GoogleFireStore(CustomStorage):
     
     
 
-# g = GoogleFireStore()
-# f = FileHandler("data/book.txt",noOfMappers)
-# for i in range(noOfMappers):
-#     f.sendNextChunkToKeyValueServer("Mapper-"+str(i),g)
-# print(g.get("Mapper-4"))    
+g = GoogleFireStore()
+f = FileHandler("data/book_sample.txt",noOfMappers)
+for i in range(noOfMappers):
+    f.sendNextChunkToKeyValueServer("Mapper-"+str(i),g)
+ 
 
