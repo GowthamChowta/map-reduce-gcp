@@ -61,7 +61,7 @@ class Mapper:
             # Adding sleep to maintain some consistency
             sleep(0.1)
             targetReducer = len(key) % self.noOfReducers            
-            print(f"Sending data {key} to reducer ", self.reducerIps[targetReducer])
+            print(f"Sending data {key:10} to reducer : [{targetReducer}] ", self.reducerIps[targetReducer])
             toReducerClient = Client(self.reducerIps[targetReducer],8080)
             toReducerClient.append(key, str(value))        
             count +=1
