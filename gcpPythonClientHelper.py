@@ -8,9 +8,11 @@ from google.cloud import compute_v1
 import configparser
 import os
 
-
-if "map-reduce-gcp"  not in os.getcwd():
-    os.chdir("map-reduce-gcp/")
+try:
+    if "map-reduce-gcp"  not in os.getcwd():
+        os.chdir("map-reduce-gcp/")
+except:
+    print("Running locally")
 
 def read_ini(file_path="./config.ini"):
     config = configparser.ConfigParser()

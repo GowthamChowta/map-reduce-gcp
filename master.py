@@ -90,8 +90,8 @@ def setupInfrastructure(noOfMappers, noOfReducers):
         reducerPublicIP, reducerInternalIP = setupMachine("reducer-"+str(i))
         reducersIP.append((reducerPublicIP, reducerInternalIP))
     
-    config.set("GCP","masterpublicip"," ".join(masterPublicIp))
-    config.set("GCP","masterinternalip"," ".join(masterInternalIp))
+    config.set("GCP","masterpublicip",masterPublicIp)
+    config.set("GCP","masterinternalip",masterInternalIp)
     
     config.set("GCP","mapperpublicips"," ".join([i[0] for i in mappersIP]))
     config.set("GCP","mapperinternalips"," ".join([i[1] for i in mappersIP]))
@@ -144,7 +144,7 @@ def installDependencies():
     
     print("[Main] Mapper setup is complete")
     
-    reducersIP = config.get("GCP","reducerinternalips").split()
+    reducersIP = config.get("GCP","reducerpublicips").split()
     
     for i in range(len(reducersIP)):
         print(f"Sending credentials to {reducersIP[i]} ...")        
@@ -153,8 +153,8 @@ def installDependencies():
         
     for i in range(len(reducersIP)):
         print(f"Installing dependencies on {reducersIP[i]} ...")                
-        installDependenciesOnMachine(reducersIP[i],commandsToSetupOnMachine[:2])
-        print(f"Installing dependencies on {reducersIP[i]} done")      
+        installDependenciesOnMachine(reducersIP[i],commandsToSetupOnMachine)
+        print(f"Installing dependencies on {reducersIP[i]} done") 
         
         
     print("[Main] Reducer setup is complete")
@@ -199,12 +199,12 @@ if __name__ == "__main__":
     # # Args not necessary. 
     # s.startServerOnADifferentProcess(m.masterDoWork,args=('Master',),name="Master Server")
     
-    setupInfrastructure(noOfMappers, noOfReducers)
+    # setupInfrastructure(noOfMappers, noOfReducers)
     print("Setting up infrastructure")
-    sleep(30)
+    # sleep(30)
     print("Installing dependencies")
-    installDependencies()
-    # startReducerServers()
-    # print("[Main] Reducer servers started")
-    # sleep(5)
-    # startMapperWork()
+    # installDependencies()
+    startReducerServers()
+    print("[Main] Reducer servers started")
+    sleep(5)
+    startMapperWork()
