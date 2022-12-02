@@ -11,9 +11,11 @@ import sys
 
 os.environ["PYTHONHASHSEED"] = "0"
 
+
 config = read_ini("config.ini")
 
-
+applicationCredentialsPath = config["GCP"]["localappcredentialsPath"]
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = applicationCredentialsPath
 
 
 def word_count_m(start, data):
