@@ -11,14 +11,19 @@ from time import sleep
 import json
 from utils.constants import INVALIDCOMMAND, STORED
 import sys
-# HOST = socket.gethostbyname(socket.gethostname())
 import os
+
+from utils.util import read_ini
 
 try:
     if "map-reduce-gcp"  not in os.getcwd():
         os.chdir("map-reduce-gcp/")
 except:
     print("Running locally")
+    
+config = read_ini("config.ini")
+USER =config["USER"]["USERNAME"]
+    
 
 def word_count_r(keyValueStore, key, value):
     if key not in keyValueStore:
@@ -98,7 +103,7 @@ class ReducerKeyValueServer:
             if type(value) == int:
                 break
             dict[key] = list(value)
-        with open("/home/chgowt_iu_edu/map-reduce-gcp/output/" + filePath + ".json", "w") as f:
+        with open("/home/"+ USER+"/map-reduce-gcp/output/" + filePath + ".json", "w") as f:
             json.dump(dict, f)
         print(f"[{filePath}] Data saved to disk")
     

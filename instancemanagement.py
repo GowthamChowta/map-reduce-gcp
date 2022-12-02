@@ -13,8 +13,8 @@ STORAGE = sys.argv[1]
 
 params = read_ini()
 
-applicationCredentialsPath = params["GCP"]["localappcredentialsPath"]
 projectPath = params["GCP"]["projectPath"]
+applicationCredentialsPath = params["GCP"]["localappcredentialsPath"]
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = applicationCredentialsPath
 ZONE= params["USER"]["ZONE"]
 PROJECTID=params["USER"]["PROJECTID"]

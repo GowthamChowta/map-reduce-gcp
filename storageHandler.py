@@ -16,6 +16,8 @@ except:
 params = read_ini()
 
 projectId = params["USER"]["PROJECTID"]
+applicationCredentialsPath = params["GCP"]["localappcredentialsPath"]
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = applicationCredentialsPath
 
 
 
