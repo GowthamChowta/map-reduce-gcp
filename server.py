@@ -26,7 +26,7 @@ class Server:
             self.index += 1
 
     def startServerOnADifferentProcess(self, work, args=(), name=""):
-        p = multiprocessing.Process(target=self.startServer, args=(work, args, name), name=name)
+        p = Thread(target=self.startServer, args=(work, args, name), name=name)
         p.start()
 
 

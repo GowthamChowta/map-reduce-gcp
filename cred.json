@@ -1,6 +1,7 @@
 {
   "client_id": "764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com",
   "client_secret": "d-FL95Q19q7MQmFpd7hHD0Ty",
-  "refresh_token": "1//01Vvbj6j8zamtCgYIARAAGAESNwF-L9Ir_ie1doIIpNIXqFfkirU1f-17EiaV_cp4CvBSQuXdVkEmi0XXNhW8BlfisQ0tV4pBOro",
+  "quota_project_id": "chgowt-test-2",
+  "refresh_token": "1//01Gi34dxcCvDsCgYIARAAGAESNwF-L9Ir5Cg4zfpDoPwRQrtK8L9muUGyToz0SE9n2CfVkQrdmdrAnqBlrg0iRvKE8ir6bcLZZeo",
   "type": "authorized_user"
 }

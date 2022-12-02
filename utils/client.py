@@ -1,7 +1,4 @@
 import socket
-from time import sleep
-
-from util import read_ini
 
 
 class Client:

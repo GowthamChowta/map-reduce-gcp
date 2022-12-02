@@ -1,10 +1,7 @@
 from abc import ABC, abstractmethod
-import json
-import os
-from google.cloud import firestore, storage
-
-from constants import NEWLINESEPERATOR, NOTEXISTS
-from gcpPythonClientHelper import read_ini
+from google.cloud import firestore
+from utils.constants import NEWLINESEPERATOR, NOTEXISTS
+from utils.util import read_ini
 
 # The `project` parameter is optional and represents which project the client
 # will act on behalf of. If not supplied, the client falls back to the default
@@ -14,43 +11,15 @@ from gcpPythonClientHelper import read_ini
 params = read_ini()
 
 projectId = params["USER"]["PROJECTID"]
-noOfMappers = int(params["APPLICATION"]["NOOFMAPPERS"])
 
 
-class FileHandler:
-    def __init__(self, path, noOfMappers):
-        self.path = path
-        self.startIndex = 0
-        self.chunkSize = -1
-        self.noOfMappers = noOfMappers
-        self.data = None
-        self.loadFile()
-        self.updateChunkSize()
-
-    def loadFile(self):
-        with open(self.path) as f:
-            self.data = f.readlines()
-            self.numberOfLines = len(self.data)
-
-    def updateChunkSize(self):
-
-        self.chunkSize = self.numberOfLines // self.noOfMappers
-
-    def readNextChunk(self):
-
-        self.chunk = " ".join(self.data[self.startIndex : self.startIndex + self.chunkSize])
-        self.startIndex += self.chunkSize
-
-    def sendNextChunkToKeyValueServer(self, key,c):
-        self.readNextChunk()
-        print("Key is",key," and next chunk is",self.chunk[:100])
-        c.save([key, self.chunk])
 
 class CustomStorage(ABC):
     
     @abstractmethod
     def get(self):
         pass
+    
     @abstractmethod
     def save(self,data):
         pass
@@ -110,9 +79,5 @@ class GoogleFireStore(CustomStorage):
     
     
 
-g = GoogleFireStore()
-f = FileHandler("data/book_sample.txt",noOfMappers)
-for i in range(noOfMappers):
-    f.sendNextChunkToKeyValueServer("Mapper-"+str(i),g)
  
 

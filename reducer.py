@@ -1,6 +1,6 @@
 from collections import defaultdict
 import socket
-from putDataInKeyValueStore import GoogleFireStore
+from storageHandler import GoogleFireStore
 
 
 from server import Server
@@ -9,7 +9,7 @@ import socket
 import re
 from time import sleep
 import json
-from constants import INVALIDCOMMAND, NEWLINESEPERATOR, NOTEXISTS, STORED
+from utils.constants import INVALIDCOMMAND, STORED
 import sys
 # HOST = socket.gethostbyname(socket.gethostname())
 

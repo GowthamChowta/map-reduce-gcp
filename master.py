@@ -4,13 +4,13 @@ import os
 import socket
 from threading import Thread
 from time import sleep, time
-from putDataInKeyValueStore import GoogleFireStore
+from storageHandler import GoogleFireStore
 
 from instancemanagement import installDependenciesOnMachine, sendDefaultApplicationCredentialsFileToMachine, setupMachine
-from client import Client
-from constants import INVALIDCOMMAND
+from utils.client import Client
+from utils.constants import INVALIDCOMMAND
 from server import Server
-from util import read_ini
+from utils.util import read_ini
 import re
 
 config = read_ini("config.ini")
@@ -75,19 +75,19 @@ class Master:
 def setupInfrastructure(noOfMappers, noOfReducers):
     
 
-    masterPublicIp, masterInternalIp = setupMachine("master-2")    
+    masterPublicIp, masterInternalIp = setupMachine("master1-2")    
     
     # masterPublicIp = "34.94.160.168"    
         
     mappersIP = []
     reducersIP = []
     for i in range(noOfMappers):
-        mapperPublicIP, mapperInternalIP = setupMachine("mapperttest-"+str(i))
+        mapperPublicIP, mapperInternalIP = setupMachine("mapperttest1-"+str(i))
         mappersIP.append((mapperPublicIP, mapperInternalIP))        
     # mappersIP = [["34.102.112.111"],["35.235.93.87"],["34.102.27.112"]]
 
     for i in range(noOfReducers):
-        reducerPublicIP, reducerInternalIP = setupMachine("reducer-"+str(i))
+        reducerPublicIP, reducerInternalIP = setupMachine("reducer1-"+str(i))
         reducersIP.append((reducerPublicIP, reducerInternalIP))
     
     config.set("GCP","masterpublicip",masterPublicIp)
@@ -202,13 +202,13 @@ if __name__ == "__main__":
     # Args not necessary. 
     s.startServerOnADifferentProcess(m.masterDoWork,args=('Master',),name="Master Server")
     
-    # setupInfrastructure(noOfMappers, noOfReducers)
+    setupInfrastructure(noOfMappers, noOfReducers)
     print("Setting up infrastructure")
-    # saveToFireStore()
-    # sleep(30)
+    saveToFireStore()
+    sleep(300)
     print("Installing dependencies")
-    # installDependencies()
+    installDependencies()
     startReducerServers()
     print("[Main] Reducer servers started")
-    sleep(5)
+    # sleep(5)
     startMapperWork()

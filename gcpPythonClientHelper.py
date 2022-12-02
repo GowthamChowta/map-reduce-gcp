@@ -5,19 +5,17 @@ from typing import Any, List
 import paramiko
 from google.api_core.extended_operation import ExtendedOperation
 from google.cloud import compute_v1
-import configparser
 import os
+
+from utils.util import read_ini
+
+
 
 try:
     if "map-reduce-gcp"  not in os.getcwd():
         os.chdir("map-reduce-gcp/")
 except:
     print("Running locally")
-
-def read_ini(file_path="./config.ini"):
-    config = configparser.ConfigParser()
-    config.read(file_path)    
-    return config
 
 
 params = read_ini()

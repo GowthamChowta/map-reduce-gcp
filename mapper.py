@@ -1,11 +1,10 @@
 from collections import Counter, defaultdict
 import socket
 from time import sleep
-from putDataInKeyValueStore import GoogleFireStore
-from client import Client
-from constants import STOPWORDS
-from server import Server
-from util import read_ini
+from storageHandler import GoogleFireStore
+from utils.client import Client
+from utils.constants import STOPWORDS
+from utils.util import read_ini
 import re
 import os
 import sys
@@ -77,9 +76,7 @@ class Mapper:
 
     def startMapper(self, func):
         print("Starting mappers")
-
         
-        s = Server(self.host, self.port)
         self.mapperWork(func, self.index, "Mapper-" + str(self.index))
         # proc = s.startServerOnADifferentProcess(
         #     self.mapperWork, args=(func, chunkSize * self.index, "Mapper-" + str(self.index)), name=f"Mapper-" + str(self.index)
@@ -90,4 +87,4 @@ index = int(sys.argv[1])
 
 m = Mapper(8080,index)
 m.startMapper("inverted_index_m")
-        
+
