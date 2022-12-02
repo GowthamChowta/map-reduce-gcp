@@ -13,6 +13,12 @@ from server import Server
 from utils.util import read_ini
 import re
 
+try:
+    if "map-reduce-gcp"  not in os.getcwd():
+        os.chdir("map-reduce-gcp/")
+except:
+    print("Running locally")
+
 config = read_ini("config.ini")
 
 
